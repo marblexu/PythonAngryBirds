@@ -1,0 +1,21 @@
+{
+    "birds":[
+        {"type":"yellow_bird"},
+        {"type":"yellow_bird"},
+        {"type":"yellow_bird"},
+        {"type":"yellow_bird"}
+    ],
+    "pigs":[
+        {"type":"normal_pig", "x": 880, "y":460},
+        {"type":"normal_pig", "x":1000, "y":360}
+    ],
+    "shapes":[
+        {"type":"column", "x": 880, "y":520},
+        {"type":"  beam", "x": 880, "y":450},
+        {"type":"column", "x": 965, "y":520},
+        {"type":"column", "x": 965, "y":430},
+        {"type":"column", "x":1035, "y":520},
+        {"type":"column", "x":1035, "y":430},
+        {"type":  "beam", "x":1000, "y":370}
+    ]
+}

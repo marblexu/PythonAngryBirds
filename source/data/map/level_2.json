@@ -1,0 +1,18 @@
+{
+    "birds":[
+        {"type":"blue_bird"},
+        {"type":"blue_bird"},
+        {"type":"red_bird"},
+        {"type":"red_bird"}
+    ],
+    "pigs":[
+        {"type":"normal_pig", "x":1000, "y":500}
+    ],
+    "shapes":[
+        {"type":"column", "x": 900, "y":520},
+        {"type":"column", "x": 850, "y":520},
+        {"type":"column", "x": 850, "y":450},
+        {"type":"column", "x": 900, "y":450},
+        {"type":  "beam", "x":1105, "y":390}
+    ]
+}

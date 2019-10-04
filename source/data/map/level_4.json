@@ -1,0 +1,40 @@
+{
+    "birds":[
+        {"type":"blue_bird"},
+        {"type":"blue_bird"},
+        {"type":"yellow_bird"},
+        {"type":"red_bird"}
+    ],
+    "pigs":[
+        {"type":"normal_pig", "x": 948, "y":280},
+        {"type":"normal_pig", "x": 885, "y":400},
+        {"type":"normal_pig", "x":1000, "y":400}
+    ],
+    "shapes":[
+        {"type":"column", "x":1100, "y":500},
+        {"type":"column", "x":1040, "y":500},
+        {"type":"column", "x": 980, "y":500},
+        {"type":"column", "x": 920, "y":500},
+        {"type":"column", "x": 860, "y":500},
+        {"type":"column", "x": 800, "y":500},
+        
+        {"type":  "beam", "x":1070, "y":448},
+        {"type":  "beam", "x": 950, "y":448},
+        {"type":  "beam", "x": 830, "y":448},
+        {"type":  "beam", "x":1010, "y":420},
+        {"type":  "beam", "x": 890, "y":420},
+        
+        {"type":"column", "x": 860, "y":377},
+        {"type":"column", "x": 920, "y":377},
+        {"type":"column", "x": 980, "y":377},
+        {"type":"column", "x":1040, "y":377},
+        
+        {"type":  "beam", "x":1010, "y":320},
+        {"type":  "beam", "x": 890, "y":320},
+        {"type":  "beam", "x": 950, "y":300},
+        
+        {"type":"column", "x": 920, "y":250},
+        {"type":"column", "x": 980, "y":250},
+        {"type":  "beam", "x": 950, "y":200}
+    ]
+}
