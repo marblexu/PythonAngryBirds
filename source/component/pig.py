@@ -1,5 +1,6 @@
 __author__ = 'marble_xu'
 
+import random
 import pygame as pg
 from .. import tool
 from .. import constants as c
@@ -17,7 +18,7 @@ class Pig():
         self.name = name
         self.life = life
         self.animate_timer = 0
-        self.animate_interval = 300
+        self.animate_interval = 100
 
         self.load_images()
         self.setup_images()
@@ -59,7 +60,7 @@ class Pig():
 
     def animation(self):
         if self.frame_index == 0:
-            interval = 3000
+            interval = 2000 + random.randint(0, 2000)
         else:
             interval = self.animate_interval
 

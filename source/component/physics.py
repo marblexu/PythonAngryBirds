@@ -42,9 +42,10 @@ class Physics():
 
     
     def setup_lines(self):
-        # Static floor
+        # Static Ground
+        x, y = to_pymunk(c.SCREEN_WIDTH, c.GROUND_HEIGHT)
         static_body = pm.Body(body_type=pm.Body.STATIC)
-        static_lines = [pm.Segment(static_body, (0.0, 050.0), (1200.0, 050.0), 0.0)]
+        static_lines = [pm.Segment(static_body, (0.0, y), (x, y), 0.0)]
 
         for line in static_lines:
             line.elasticity = 0.95
