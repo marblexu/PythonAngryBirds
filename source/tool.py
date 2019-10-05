@@ -82,6 +82,8 @@ class Control():
             self.update()
             pg.display.update()
             self.clock.tick(self.fps)
+            if c.DEBUG:
+                pg.display.set_caption("pos: " + str(pg.mouse.get_pos()))
         print('game over')
 
 

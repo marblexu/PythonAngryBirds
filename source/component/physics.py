@@ -44,7 +44,7 @@ class Physics():
     def setup_lines(self):
         # Static floor
         static_body = pm.Body(body_type=pm.Body.STATIC)
-        static_lines = [pm.Segment(static_body, (0.0, 055.0), (1200.0, 055.0), 0.0)]
+        static_lines = [pm.Segment(static_body, (0.0, 050.0), (1200.0, 050.0), 0.0)]
 
         for line in static_lines:
             line.elasticity = 0.95
@@ -107,20 +107,24 @@ class Physics():
         bird.set_physics(phybird)
         self.birds.append(bird)
         
-    def add_pig(self, pig, x, y):
-        x, y = to_pymunk(x, y)
-        phypig = PhyPig(x, y, self.space)
+    def add_pig(self, pig):
+        '''must use the center position of pygame to transfer to the position of pymunk'''
+        x, y = to_pymunk(pig.rect.centerx, pig.rect.centery)
+        radius = pig.rect.w//2
+        phypig = PhyPig(x, y, radius, self.space)
         pig.set_physics(phypig)
         self.pigs.append(pig)
 
-    def add_block(self, block, x, y):
+    def add_block(self, block):
+        '''must use the center position of pygame to transfer to the position of pymunk'''
         phy = None
+        x, y = to_pymunk(block.rect.centerx, block.rect.centery)
         if block.name == c.BEAM:
             length, height = block.rect.w, block.rect.h
-            phy = PhyPolygon(to_pymunk(x, y), length, height, self.space)
+            phy = PhyPolygon((x, y), length, height, self.space)
         elif block.name == c.CIRCLE:
             radius = block.rect.w//2
-            phy = PhyCircle(to_pymunk(x, y), radius, self.space)
+            phy = PhyCircle((x, y), radius, self.space)
         if phy:
             block.set_physics(phy)
             self.blocks.append(block)
@@ -142,9 +146,11 @@ class Physics():
                 birds_to_remove.append(bird)
             else:
                 poly = bird.phy.shape
+                # the postion transferred from pymunk is the center position of pygame
                 p = to_pygame(poly.body.position)
                 x, y = p
                 w, h = bird.image.get_size()
+                # change to [left, top] position of pygame
                 x -= w * 0.5
                 y -= h * 0.5
                 angle_degree = math.degrees(poly.body.angle)
@@ -281,9 +287,8 @@ class PhyBird2():
 
 
 class PhyPig():
-    def __init__(self, x, y, space):
+    def __init__(self, x, y, radius, space):
         mass = 5
-        radius = 14
         inertia = pm.moment_for_circle(mass, 0, radius, (0, 0))
         body = pm.Body(mass, inertia)
         body.position = x, y
@@ -301,7 +306,7 @@ class PhyPolygon():
         body = pm.Body(mass, moment)
         body.position = Vec2d(pos)
         shape = pm.Poly.create_box(body, (length, height))
-        shape.friction = 0.5
+        shape.friction = 1
         shape.collision_type = COLLISION_BLOCK
         space.add(body, shape)
         self.body = body
@@ -313,7 +318,7 @@ class PhyCircle():
         body = pm.Body(mass, moment)
         body.position = Vec2d(pos)
         shape = pm.Circle(body, radius, (0, 0))
-        shape.friction = 0.5
+        shape.friction = 1
         shape.collision_type = COLLISION_BLOCK
         space.add(body, shape)
         self.body = body

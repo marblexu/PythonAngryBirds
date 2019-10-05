@@ -1,39 +1,50 @@
 {
     "birds":[
-        {"type":"yellow_bird"},
-        {"type":"yellow_bird"},
-        {"type":"yellow_bird"},
-        {"type":"yellow_bird"}
+        {"type":"red_bird"},
+        {"type":"red_bird"},
+        {"type":"red_bird"},
+        {"type":"red_bird"}
     ],
     "pigs":[
-        {"type":"normal_pig", "x":1000, "y":520},
-        {"type":"normal_pig", "x":985, "y":350},
-        {"type":"normal_pig", "x":1010, "y":350}
+        {"type":   "big_pig", "x":950, "y":550},
+        {"type":   "big_pig", "x":950, "y":484},
+        {"type":"normal_pig", "x":970, "y":372},
+        {"type":"normal_pig", "x":975, "y":344},
+        {"type":"normal_pig", "x":965, "y":316}
     ],
     "blocks":[
-        {"x": 860, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x": 880, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x": 925, "y":500, "material":"stone", "shape":"beam", "type":5, "direction":1},
-        {"x": 925, "y":420, "material":"stone", "shape":"beam", "type":5, "direction":1},
-        {"x": 970, "y":460, "material":"wood",  "shape":"beam", "type":3, "direction":1},
-        {"x":1035, "y":460, "material":"wood",  "shape":"beam", "type":3, "direction":1},
-        {"x":1080, "y":500, "material":"stone", "shape":"beam", "type":5, "direction":1},
-        {"x":1080, "y":420, "material":"stone", "shape":"beam", "type":5, "direction":1},
-        {"x":1135, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x":1155, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x": 915, "y":370, "material":"wood",  "shape":"beam", "type":3, "direction":0},
-        {"x":1080, "y":370, "material":"wood",  "shape":"beam", "type":3, "direction":0},
+        {"x": 820, "y":550, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 850, "y":550, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 880, "y":550, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x": 880, "y":470, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x": 930, "y":550, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1010, "y":550, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1040, "y":550, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x":1040, "y":470, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x":1090, "y":550, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x":1120, "y":550, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 820, "y":390, "material":"wood",  "shape":"beam", "type":3, "direction":0},
+        {"x": 980, "y":390, "material":"wood",  "shape":"beam", "type":3, "direction":0},
         
-        {"x": 930, "y":280, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x": 960, "y":280, "material":"wood",  "shape":"beam", "type":3, "direction":1},
-        {"x":1040, "y":280, "material":"wood",  "shape":"beam", "type":3, "direction":1},
-        {"x":1070, "y":280, "material":"stone", "shape":"beam", "type":3, "direction":1},
-        {"x":1000, "y":200, "material":"wood",  "shape":"beam", "type":4, "direction":0},
+        {"x": 900, "y":372, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 920, "y":372, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x": 940, "y":372, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1000, "y":372, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1020, "y":372, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1040, "y":372, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 900, "y":212, "material":"wood",  "shape":"beam", "type":2, "direction":0},
+        {"x": 980, "y":212, "material":"wood",  "shape":"beam", "type":2, "direction":0},
         
+        {"x": 943, "y":194, "material":"stone", "shape":"circle", "type":2},
+        {"x": 905, "y":194, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x": 925, "y":194, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x":1015, "y":194, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x":1035, "y":194, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x": 900, "y":114, "material":"glass", "shape":"beam", "type":3, "direction":0},
         
-        {"x": 940, "y":150, "material":"glass", "shape":"beam", "type":2, "direction":1},
-        {"x":1050, "y":150, "material":"glass", "shape":"beam", "type":2, "direction":1},
-        {"x": 990, "y": 95, "material":"glass", "shape":"beam", "type":3, "direction":0}
-
+        {"x": 910, "y": 98, "material":"glass", "shape":"beam", "type":1, "direction":1},
+        {"x": 950, "y": 98, "material":"glass", "shape":"beam", "type":1, "direction":1},
+        {"x": 990, "y": 98, "material":"glass", "shape":"beam", "type":1, "direction":1},
+        {"x":1030, "y": 98, "material":"glass", "shape":"beam", "type":1, "direction":1}
     ]
 }

@@ -5,10 +5,12 @@ from .. import tool
 from .. import constants as c
 
 def create_pig(type, x, y):
-    bird = None
+    pig = None
     if type == c.NORMAL_PIG:
-        bird = NormalPig(x, y)
-    return bird
+        pig = NormalPig(x, y)
+    elif type == c.BIG_PIG:
+        pig = BigPig(x, y)
+    return pig
 
 class Pig():
     def __init__(self, x, y, name, life):
@@ -28,11 +30,11 @@ class Pig():
         self.angle_degree = 0
         self.state = c.IDLE
 
-    def load_frames(self, sheet, frame_rect_list):
+    def load_frames(self, sheet, frame_rect_list, scale):
         frames = []
         for frame_rect in frame_rect_list:
             frames.append(tool.get_image(sheet, *frame_rect, 
-                            c.BLACK, c.PIG_MULTIPLIER))
+                            c.BLACK, scale))
         return frames
 
     def load_images(self):
@@ -110,4 +112,19 @@ class NormalPig(Pig):
 
         rect_lists = [normal_rect_list, hurt1_rect_list, hurt2_rect_list]
         for rect_list in rect_lists:
-            self.images_list.append(self.load_frames(sheet, rect_list))
+            self.images_list.append(self.load_frames(sheet, rect_list, c.NORMAL_PIG_MULTIPLIER))
+
+class BigPig(Pig):
+    def __init__(self, x, y):
+        Pig.__init__(self, x, y, c.BIG_PIG, 16)
+
+    def load_images(self):
+        self.images_list = []
+        sheet = tool.GFX[c.PIG_SHEET]
+        normal_rect_list = [(438, 712, 80, 80), (438, 794, 80, 80), (438, 874, 80, 80)]
+        hurt1_rect_list = [(522, 794, 80, 80), (522, 872, 80, 80), (522, 948, 80, 80)]
+        hurt2_rect_list = [(438, 956, 80, 80), (522, 792, 80, 80), (522, 1026, 80, 80)]
+
+        rect_lists = [normal_rect_list, hurt1_rect_list, hurt2_rect_list]
+        for rect_list in rect_lists:
+            self.images_list.append(self.load_frames(sheet, rect_list, c.BIG_PIG_MULTIPLIER))

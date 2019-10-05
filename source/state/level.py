@@ -72,7 +72,7 @@ class Level(tool.State):
                                     (int(self.bg_rect.width*c.BACKGROUND_MULTIPLER),
                                     int(self.bg_rect.height*c.BACKGROUND_MULTIPLER)))
         self.bg_rect = self.background.get_rect()
-        self.bg_rect.y = -50
+        self.bg_rect.y = -40
 
     def setup_buttons(self):
         self.buttons = []
@@ -116,7 +116,7 @@ class Level(tool.State):
         for data in self.map_data[c.PIGS]:
             tmp = pig.create_pig(data[c.TYPE], data['x'], data['y'])
             if tmp:
-                self.physics.add_pig(tmp, data['x'], data['y'])
+                self.physics.add_pig(tmp)
                 
     def setup_blocks(self):
         for data in self.map_data[c.BLOCKS]:
@@ -127,7 +127,7 @@ class Level(tool.State):
             tmp = block.create_block(data['x'], data['y'], data[c.MATERIAL],
                               data[c.SHAPE], data[c.TYPE], direction)
             if tmp:
-                self.physics.add_block(tmp, data['x'], data['y'])
+                self.physics.add_block(tmp)
 
     def update(self, surface, current_time, mouse_pos, mouse_pressed):
         self.game_info[c.CURRENT_TIME] = self.current_time = current_time
