@@ -7,14 +7,17 @@
     ],
     "pigs":[
         {"type":"normal_pig", "x":980, "y":520},
-        {"type":"normal_pig", "x":985, "y":440}
+        {"type":"normal_pig", "x":985, "y":430}
     ],
-    "shapes":[
-        {"type":"column", "x": 950, "y":520},
-        {"type":"column", "x":1010, "y":520},
-        {"type":  "beam", "x": 980, "y":450},
-        {"type":"column", "x": 950, "y":400},
-        {"type":"column", "x":1010, "y":400},
-        {"type":  "beam", "x": 980, "y":360}
+    "blocks":[
+        {"x": 890, "y":500, "material":"glass", "shape":"beam", "type":4, "direction":1},
+        {"x": 950, "y":500, "material":"wood", "shape":"beam", "type":2, "direction":1},
+        {"x":1010, "y":500, "material":"wood", "shape":"beam", "type":2, "direction":1},
+        {"x":1070, "y":500, "material":"glass", "shape":"beam", "type":4, "direction":1},
+        {"x": 980, "y":450, "material":"wood", "shape":"beam", "type":2, "direction":0},
+        {"x": 950, "y":400, "material":"wood", "shape":"beam", "type":2, "direction":1},
+        {"x":1010, "y":400, "material":"wood", "shape":"beam", "type":2, "direction":1},
+        {"x": 980, "y":360, "material":"wood", "shape":"beam", "type":2, "direction":0},
+        {"x": 985, "y":340, "material":"glass", "shape":"beam", "type":4, "direction":0}
     ]
 }

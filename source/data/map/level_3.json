@@ -6,16 +6,34 @@
         {"type":"yellow_bird"}
     ],
     "pigs":[
-        {"type":"normal_pig", "x": 880, "y":460},
-        {"type":"normal_pig", "x":1000, "y":360}
+        {"type":"normal_pig", "x":1000, "y":520},
+        {"type":"normal_pig", "x":985, "y":350},
+        {"type":"normal_pig", "x":1010, "y":350}
     ],
-    "shapes":[
-        {"type":"column", "x": 880, "y":520},
-        {"type":"  beam", "x": 880, "y":450},
-        {"type":"column", "x": 965, "y":520},
-        {"type":"column", "x": 965, "y":430},
-        {"type":"column", "x":1035, "y":520},
-        {"type":"column", "x":1035, "y":430},
-        {"type":  "beam", "x":1000, "y":370}
+    "blocks":[
+        {"x": 860, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 880, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 925, "y":500, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x": 925, "y":420, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x": 970, "y":460, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1035, "y":460, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1080, "y":500, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x":1080, "y":420, "material":"stone", "shape":"beam", "type":5, "direction":1},
+        {"x":1135, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x":1155, "y":460, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 915, "y":370, "material":"wood",  "shape":"beam", "type":3, "direction":0},
+        {"x":1080, "y":370, "material":"wood",  "shape":"beam", "type":3, "direction":0},
+        
+        {"x": 930, "y":280, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x": 960, "y":280, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1040, "y":280, "material":"wood",  "shape":"beam", "type":3, "direction":1},
+        {"x":1070, "y":280, "material":"stone", "shape":"beam", "type":3, "direction":1},
+        {"x":1000, "y":200, "material":"wood",  "shape":"beam", "type":4, "direction":0},
+        
+        
+        {"x": 940, "y":150, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x":1050, "y":150, "material":"glass", "shape":"beam", "type":2, "direction":1},
+        {"x": 990, "y": 95, "material":"glass", "shape":"beam", "type":3, "direction":0}
+
     ]
 }

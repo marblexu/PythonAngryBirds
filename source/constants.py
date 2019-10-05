@@ -57,10 +57,13 @@ ATTACK = 'attack'
 DEAD = 'dead'
 
 #LEVEL NAME
+MATERIAL = 'material'
+SHAPE = 'shape'
 TYPE = 'type'
+DIRECTION = 'direction'
 BIRDS = 'birds'
 PIGS = 'pigs'
-SHAPES = 'shapes'
+BLOCKS = 'blocks'
 
 #BIRD
 BIRD_SHEET = 'angry_birds'
@@ -72,9 +75,29 @@ YELLOW_BIRD = 'yellow_bird'
 PIG_SHEET = 'full-sprite'
 NORMAL_PIG = 'normal_pig'
 
-#POLYGON
+''' BLOCK INFO '''
+BLOCK_SHEET = 'block'
+#BLOCK MATERIAL
+GLASS = 'glass'
+WOOD = 'wood'
+STONE = 'stone'
+#SHAPE TYPE
 BEAM = 'beam'
-COLUMN = 'column'
+CIRCLE = 'circle'
+#BEAM SUBTYPE
+BEAM_TYPE_1 = 1
+BEAM_TYPE_2 = 2
+BEAM_TYPE_3 = 3
+BEAM_TYPE_4 = 4
+BEAM_TYPE_5 = 5
+BEAM_TYPE_6 = 6
+#CIRCLE SUBTYPE
+CIRCLE_TYPE_1 = 1
+CIRCLE_TYPE_2 = 2
+#DIRECTION
+HORIZONTAL = 0
+VERTICAL = 1
+
 
 #BUTTON
 BUTTON_HEIGHT = 10

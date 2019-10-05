@@ -6,7 +6,7 @@ import math
 import pygame as pg
 from .. import tool
 from .. import constants as c
-from ..component import button, physics, bird, pig, shape
+from ..component import button, physics, bird, pig, block
 
 bold_font = pg.font.SysFont("arial", 30, bold=True)
 
@@ -56,7 +56,7 @@ class Level(tool.State):
         self.setup_sling()
         self.setup_birds()
         self.setup_pigs()
-        self.setup_shapes()
+        self.setup_blocks()
 
     def load_map(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -118,11 +118,16 @@ class Level(tool.State):
             if tmp:
                 self.physics.add_pig(tmp, data['x'], data['y'])
                 
-    def setup_shapes(self):
-        for data in self.map_data[c.SHAPES]:
-            tmp = shape.create_shape(data[c.TYPE], data['x'], data['y'])
+    def setup_blocks(self):
+        for data in self.map_data[c.BLOCKS]:
+            if c.DIRECTION in data:
+                direction = data[c.DIRECTION]
+            else:
+                direction = 0
+            tmp = block.create_block(data['x'], data['y'], data[c.MATERIAL],
+                              data[c.SHAPE], data[c.TYPE], direction)
             if tmp:
-                self.physics.add_shape(tmp, data['x'], data['y'])
+                self.physics.add_block(tmp, data['x'], data['y'])
 
     def update(self, surface, current_time, mouse_pos, mouse_pressed):
         self.game_info[c.CURRENT_TIME] = self.current_time = current_time
@@ -161,6 +166,7 @@ class Level(tool.State):
                                       self.sling_angle, xo, yo)
                 self.active_bird.set_attack()
                 self.birds.remove(self.active_bird)
+                self.physics.enable_check_collide()
                 self.state = c.ATTACK
         elif not self.sling_click:
             if mouse_pos:

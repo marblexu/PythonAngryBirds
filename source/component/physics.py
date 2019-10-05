@@ -9,7 +9,7 @@ from .. import constants as c
 
 COLLISION_BIRD = 1
 COLLISION_PIG = 2
-COLLISION_SHAPE = 3
+COLLISION_BLOCK = 3
 COLLISION_LINE = 4
 
 MAX_IMPULSE = 100000
@@ -34,8 +34,9 @@ class Physics():
         self.dt = 1.0/50.0/2.
         self.birds = []
         self.pigs = []
-        self.shapes = []
+        self.blocks = []
         self.path_timer = 0
+        self.check_collide = False
         self.setup_lines()
         self.setup_collision_handler()
 
@@ -43,7 +44,7 @@ class Physics():
     def setup_lines(self):
         # Static floor
         static_body = pm.Body(body_type=pm.Body.STATIC)
-        static_lines = [pm.Segment(static_body, (0.0, 060.0), (1200.0, 060.0), 0.0)]
+        static_lines = [pm.Segment(static_body, (0.0, 055.0), (1200.0, 055.0), 0.0)]
 
         for line in static_lines:
             line.elasticity = 0.95
@@ -54,23 +55,28 @@ class Physics():
 
     def setup_collision_handler(self):
         def post_solve_bird_line(arbiter, space, data):
-            bird_shape = arbiter.shapes[0]
-            my_phy.handle_bird_collide(bird_shape, True)
+            if self.check_collide:
+                bird_shape = arbiter.shapes[0]
+                my_phy.handle_bird_collide(bird_shape, True)
         def post_solve_pig_bird(arbiter, space, data):
-            pig_shape = arbiter.shapes[0]
-            my_phy.handle_pig_collide(pig_shape, MAX_IMPULSE)
-        def post_solve_pig_line(arbiter, space, data):
-            pig_shape = arbiter.shapes[0]
-            my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length, True)
-        def post_solve_pig_shape(arbiter, space, data):
-            if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
+            if self.check_collide:
                 pig_shape = arbiter.shapes[0]
-                my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length)
-        def post_solve_shape_bird(arbiter, space, data):
-            shape_shape, bird_shape = arbiter.shapes
-            my_phy.handle_bird_collide(bird_shape)
-            if arbiter.total_impulse.length > 1100:
-                my_phy.handle_shape_collide(shape_shape, arbiter.total_impulse.length)
+                my_phy.handle_pig_collide(pig_shape, MAX_IMPULSE)
+        def post_solve_pig_line(arbiter, space, data):
+            if self.check_collide:
+                pig_shape = arbiter.shapes[0]
+                my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length, True)
+        def post_solve_pig_block(arbiter, space, data):
+            if self.check_collide:
+                if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
+                    pig_shape = arbiter.shapes[0]
+                    my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length)
+        def post_solve_block_bird(arbiter, space, data):
+            if self.check_collide:
+                block_shape, bird_shape = arbiter.shapes
+                my_phy.handle_bird_collide(bird_shape)
+                if arbiter.total_impulse.length > 1100:
+                    my_phy.handle_block_collide(block_shape, arbiter.total_impulse.length)
 
         self.space.add_collision_handler(
             COLLISION_BIRD, COLLISION_LINE).post_solve = post_solve_bird_line
@@ -82,10 +88,13 @@ class Physics():
             COLLISION_PIG, COLLISION_LINE).post_solve = post_solve_pig_line
 
         self.space.add_collision_handler(
-            COLLISION_PIG, COLLISION_SHAPE).post_solve = post_solve_pig_shape
+            COLLISION_PIG, COLLISION_BLOCK).post_solve = post_solve_pig_block
 
         self.space.add_collision_handler(
-            COLLISION_SHAPE, COLLISION_BIRD).post_solve = post_solve_shape_bird
+            COLLISION_BLOCK, COLLISION_BIRD).post_solve = post_solve_block_bird
+
+    def enable_check_collide(self):
+        self.check_collide = True
 
     def add_bird(self, bird, distance, angle, x, y):
         x, y = to_pymunk(x, y)
@@ -104,16 +113,24 @@ class Physics():
         pig.set_physics(phypig)
         self.pigs.append(pig)
 
-    def add_shape(self, shape, x, y):
-        length, height = shape.rect.w, shape.rect.h
-        phypolygon = PhyPolygon(to_pymunk(x, y), length, height, self.space)
-        shape.set_physics(phypolygon)
-        self.shapes.append(shape)
+    def add_block(self, block, x, y):
+        phy = None
+        if block.name == c.BEAM:
+            length, height = block.rect.w, block.rect.h
+            phy = PhyPolygon(to_pymunk(x, y), length, height, self.space)
+        elif block.name == c.CIRCLE:
+            radius = block.rect.w//2
+            phy = PhyCircle(to_pymunk(x, y), radius, self.space)
+        if phy:
+            block.set_physics(phy)
+            self.blocks.append(block)
+        else:
+            print('not support block type:', block.name)
 
     def update(self, game_info, level, mouse_pressed):
         birds_to_remove = []
         pigs_to_remove = []
-        shapes_to_remove = []
+        blocks_to_remove = []
         self.current_time = game_info[c.CURRENT_TIME]
 
         for x in range(2): # make two updates per frame for better stability
@@ -157,21 +174,21 @@ class Physics():
             self.pigs.remove(pig)
             level.update_score(c.PIG_SCORE)
 
-        for shape in self.shapes:
-            if shape.life <= 0:
-                shapes_to_remove.append(shape)
-            poly = shape.phy.shape
+        for block in self.blocks:
+            if block.life <= 0:
+                blocks_to_remove.append(block)
+            poly = block.phy.shape
             p = poly.body.position
             p = Vec2d(to_pygame(p))
             angle_degree = math.degrees(poly.body.angle) + 180
-            rotated_image = pg.transform.rotate(shape.orig_image, angle_degree)
+            rotated_image = pg.transform.rotate(block.orig_image, angle_degree)
             offset = Vec2d(rotated_image.get_size()) / 2.
             p = p - offset
-            shape.update_position(p.x, p.y, rotated_image)
+            block.update_position(p.x, p.y, rotated_image)
 
-        for shape in shapes_to_remove:
-            self.space.remove(shape.phy.shape, shape.phy.shape.body)
-            self.shapes.remove(shape)
+        for block in blocks_to_remove:
+            self.space.remove(block.phy.shape, block.phy.shape.body)
+            self.blocks.remove(block)
             level.update_score(c.SHAPE_SCORE)
 
     def update_bird_path(self, bird, pos, level):
@@ -199,12 +216,12 @@ class Physics():
                     pig.set_damage(damage)
                     print('pig life:', pig.life, ' damage:', damage, ' impulse:', impulse)
 
-    def handle_shape_collide(self, shape_shape, impulse):
-        for shape in self.shapes:
-            if shape_shape == shape.phy.shape:
+    def handle_block_collide(self, block_shape, impulse):
+        for block in self.blocks:
+            if block_shape == block.phy.shape:
                 damage = impulse // MIN_DAMAGE_IMPULSE
-                shape.set_damage(damage)
-                print('shape damage:', damage, ' impulse:', impulse, ' life:', shape.life)
+                block.set_damage(damage)
+                print('block damage:', damage, ' impulse:', impulse, ' life:', block.life)
 
     def draw(self, surface):
         # Draw static lines
@@ -223,16 +240,8 @@ class Physics():
         for pig in self.pigs:
             pig.draw(surface)
 
-        for shape in self.shapes:
-            poly = shape.phy.shape
-            ps = poly.get_vertices()
-            ps.append(ps[0])
-            ps = map(to_pygame, ps)
-            ps = list(ps)
-            color = (255, 0, 0)
-            if c.DEBUG:
-                pg.draw.lines(surface, color, False, ps)
-            shape.draw(surface)
+        for block in self.blocks:
+            block.draw(surface)
 
 class PhyBird():
     def __init__(self, distance, angle, x, y, space):
@@ -292,9 +301,20 @@ class PhyPolygon():
         body = pm.Body(mass, moment)
         body.position = Vec2d(pos)
         shape = pm.Poly.create_box(body, (length, height))
-        shape.color = (0, 0, 255)
         shape.friction = 0.5
-        shape.collision_type = COLLISION_SHAPE
+        shape.collision_type = COLLISION_BLOCK
+        space.add(body, shape)
+        self.body = body
+        self.shape = shape
+
+class PhyCircle():
+    def __init__(self, pos, radius, space, mass=5.0):
+        moment = 1000
+        body = pm.Body(mass, moment)
+        body.position = Vec2d(pos)
+        shape = pm.Circle(body, radius, (0, 0))
+        shape.friction = 0.5
+        shape.collision_type = COLLISION_BLOCK
         space.add(body, shape)
         self.body = body
         self.shape = shape
