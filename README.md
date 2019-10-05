@@ -8,6 +8,7 @@ a simple implementation of angrybirds using pygame and pymunk
 # Requirement
 * Python 3.7
 * Python-Pygame 1.9
+* Pymunk 5.5.0
 
 # How To Start Game
 $ python main.py
