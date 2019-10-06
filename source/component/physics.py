@@ -41,7 +41,6 @@ class Physics():
         self.setup_lines()
         self.setup_collision_handler()
 
-    
     def setup_lines(self):
         # Static Ground
         x, y = to_pymunk(c.SCREEN_WIDTH, c.GROUND_HEIGHT)
@@ -123,10 +122,10 @@ class Physics():
         x, y = to_pymunk(block.rect.centerx, block.rect.centery)
         if block.name == c.BEAM:
             length, height = block.rect.w, block.rect.h
-            phy = PhyPolygon((x, y), length, height, self.space)
+            phy = PhyPolygon((x, y), length, height, self.space, block.mass)
         elif block.name == c.CIRCLE:
             radius = block.rect.w//2
-            phy = PhyCircle((x, y), radius, self.space)
+            phy = PhyCircle((x, y), radius, self.space, block.mass)
         if phy:
             block.set_physics(phy)
             self.blocks.append(block)
@@ -262,7 +261,7 @@ class PhyBird():
         inertia = pm.moment_for_circle(mass, 0, radius, (0, 0))
         body = pm.Body(mass, inertia)
         body.position = x, y
-        power = distance * 50
+        power = distance * 53
         impulse = power * Vec2d(1, 0)
         angle = -angle
         body.apply_impulse_at_local_point(impulse.rotated(angle))

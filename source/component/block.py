@@ -23,6 +23,29 @@ def create_block(x, y, material, shape, type, direction=0):
             block = CircleStone(x, y, type)
     return block
 
+def get_block_mass(name, type):
+    mass = base = 1.0
+    if name == c.BEAM:
+        if type == c.BEAM_TYPE_1:  # the shortest length
+            mass = base
+        elif type == c.BEAM_TYPE_2:
+            mass = base * 2
+        elif type == c.BEAM_TYPE_3:
+            mass = base * 4
+        elif type == c.BEAM_TYPE_4: # the longest length
+            mass = base * 5
+        elif type == c.BEAM_TYPE_5: # the thick one
+            mass = base * 4
+        elif type == c.BEAM_TYPE_6: # the square
+            mass = base * 2
+    elif name == c.CIRCLE:
+        if type == c.CIRCLE_TYPE_1: # the small circle
+            mass = base * 1.6
+        elif type == c.BEAM_TYPE_2: # the big circle
+            mass = base * 6.4
+
+    return mass
+
 class Block():
     def __init__(self, x, y, name, life):
         self.name = name
@@ -92,6 +115,7 @@ class BeamGlass(Beam):
     def __init__(self, x, y, type, direction):
         self.type = type
         Beam.__init__(self, x, y, 4, direction)
+        self.mass = get_block_mass(self.name, self.type) * c.GLASS_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.BEAM_TYPE_1: # the shortest length
@@ -118,6 +142,7 @@ class BeamWood(Beam):
     def __init__(self, x, y, type, direction):
         self.type = type
         Beam.__init__(self, x, y, 12, direction)
+        self.mass = get_block_mass(self.name, self.type) * c.WOOD_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.BEAM_TYPE_1: # the shortest length
@@ -144,6 +169,7 @@ class BeamStone(Beam):
     def __init__(self, x, y, type, direction):
         self.type = type
         Beam.__init__(self, x, y, 48, direction)
+        self.mass = get_block_mass(self.name, self.type) * c.STONE_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.BEAM_TYPE_1: # the shortest length
@@ -169,6 +195,7 @@ class BeamStone(Beam):
 class Circle(Block):
     def __init__(self, x, y, life):
         Block.__init__(self, x, y, c.CIRCLE, life)
+        self.mass = get_block_mass(self.name, self.type)
 
     def load_images(self):
         rect_list = self.get_rect_list()
@@ -181,6 +208,7 @@ class CircleGlass(Circle):
     def __init__(self, x, y, type):
         self.type = type
         Circle.__init__(self, x, y, 4)
+        self.mass = get_block_mass(self.name, self.type) * c.GLASS_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.CIRCLE_TYPE_1: # the small circle
@@ -195,6 +223,7 @@ class CircleWood(Circle):
     def __init__(self, x, y, type):
         self.type = type
         Circle.__init__(self, x, y, 12)
+        self.mass = get_block_mass(self.name, self.type) * c.GLASS_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.CIRCLE_TYPE_1: # the small circle
@@ -209,6 +238,7 @@ class CircleStone(Circle):
     def __init__(self, x, y, type):
         self.type = type
         Circle.__init__(self, x, y, 48)
+        self.mass = get_block_mass(self.name, self.type) * c.STONE_MASS_TIMES
 
     def get_rect_list(self):
         if self.type == c.CIRCLE_TYPE_1: # the small circle
