@@ -16,10 +16,11 @@ MAX_IMPULSE = 100000
 MIN_DAMAGE_IMPULSE = 300
 
 def to_pygame(p):
-    """Convert pymunk to pygame coordinates"""
+    """Convert position of pymunk to position of pygame"""
     return int(p.x), int(-p.y+600)
 
 def to_pymunk(x, y):
+    """Convert position of pygame to position of pymunk"""
     return (x, -(y-600))
 
 class Physics():
@@ -31,7 +32,7 @@ class Physics():
         # init space: set gravity and dt
         self.space = pm.Space()
         self.space.gravity = (0.0, -700.0)
-        self.dt = 1.0/50.0/2.
+        self.dt = 0.002
         self.birds = []
         self.pigs = []
         self.blocks = []
@@ -138,7 +139,10 @@ class Physics():
         blocks_to_remove = []
         self.current_time = game_info[c.CURRENT_TIME]
 
-        for x in range(2): # make two updates per frame for better stability
+        #From pymunk doc:Performing multiple calls with a smaller dt
+        #                creates a more stable and accurate simulation
+        #So make five updates per frame for better stability
+        for x in range(5):
             self.space.step(self.dt)
 
         for bird in self.birds:

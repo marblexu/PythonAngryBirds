@@ -55,6 +55,7 @@ SCORE = 'score'
 #STATE
 IDLE = 'idle'
 ATTACK = 'attack'
+OVER = 'over'
 DEAD = 'dead'
 
 #LEVEL NAME

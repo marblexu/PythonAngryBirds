@@ -57,6 +57,7 @@ class Level(tool.State):
         self.setup_birds()
         self.setup_pigs()
         self.setup_blocks()
+        self.over_timer = 0
 
     def load_map(self):
         map_file = 'level_' + str(self.game_info[c.LEVEL_NUM]) + '.json'
@@ -144,6 +145,9 @@ class Level(tool.State):
                 self.select_bird()
                 self.swith_bird_path()
                 self.state = c.IDLE
+        elif self.state == c.OVER:
+            if self.over_timer == 0:
+                self.over_timer = self.current_time
 
         for bird in self.birds:
             bird.update(self.game_info, self, mouse_pressed)
@@ -248,15 +252,18 @@ class Level(tool.State):
         return False
 
     def check_game_state(self):
-        if self.check_victory():
+        if self.state == c.OVER:
+            if (self.current_time - self.over_timer) > 2000:
+                self.done = True
+        elif self.check_victory():
             self.game_info[c.LEVEL_NUM] += 1
             self.update_score(len(self.birds) * 10000)
             self.game_info[c.SCORE] = self.score
             self.next = c.LEVEL
-            self.done = True
+            self.state = c.OVER
         elif self.check_lose():
             self.next = c.LEVEL
-            self.done = True
+            self.state = c.OVER
 
     def swith_bird_path(self):
         self.bird_old_path = self.bird_path.copy()
