@@ -24,11 +24,11 @@ def to_pymunk(x, y):
 
 class Physics():
     def __init__(self):
-        # the base of the physics
         self.reset()
 
     def reset(self, level=None):
         self.level = level
+        # init space: set gravity and dt
         self.space = pm.Space()
         self.space.gravity = (0.0, -700.0)
         self.dt = 1.0/50.0/2.
