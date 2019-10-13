@@ -86,6 +86,12 @@ class Control():
                 pg.display.set_caption("pos: " + str(pg.mouse.get_pos()))
         print('game over')
 
+def distance(xo, yo, x, y):
+    """distance between points"""
+    dx = x - xo
+    dy = y - yo
+    d = ((dx ** 2) + (dy ** 2)) ** 0.5
+    return d
 
 def get_image(sheet, x, y, width, height, colorkey, scale):
         image = pg.Surface([width, height])

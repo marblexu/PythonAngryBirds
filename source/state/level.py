@@ -27,13 +27,6 @@ def unit_vector(v):
     ub = v[1] / h
     return (ua, ub)
 
-def distance(xo, yo, x, y):
-    """distance between points"""
-    dx = x - xo
-    dy = y - yo
-    d = ((dx ** 2) + (dy ** 2)) ** 0.5
-    return d
-
 class Level(tool.State):
     def __init__(self):
         tool.State.__init__(self)
@@ -189,7 +182,7 @@ class Level(tool.State):
             mouse_x, mouse_y = pg.mouse.get_pos()
             v = vector((sling_x, sling_y), (mouse_x, mouse_y))
             uv_x, uv_y = unit_vector(v)
-            mouse_distance = distance(sling_x, sling_y, mouse_x, mouse_y)
+            mouse_distance = tool.distance(sling_x, sling_y, mouse_x, mouse_y)
             pu = (uv_x * rope_length + sling_x, uv_y * rope_length + sling_y)
             
             if mouse_distance > rope_length:

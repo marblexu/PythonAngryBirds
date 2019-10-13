@@ -57,6 +57,8 @@ IDLE = 'idle'
 ATTACK = 'attack'
 OVER = 'over'
 DEAD = 'dead'
+INIT_EXPLODE = 'init_explode'
+EXPLODE = 'explode'
 
 #LEVEL NAME
 MATERIAL = 'material'
@@ -72,6 +74,7 @@ BIRD_SHEET = 'angry_birds'
 RED_BIRD = 'red_bird'
 BLUE_BIRD = 'blue_bird'
 YELLOW_BIRD = 'yellow_bird'
+BLACK_BIRD = 'black_bird'
 
 #PIG
 PIG_SHEET = 'full-sprite'

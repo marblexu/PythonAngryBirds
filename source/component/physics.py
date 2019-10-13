@@ -2,17 +2,18 @@ __author__ = 'marble_xu'
 
 import math
 import pygame as pg
-import pygame as pg
 import pymunk as pm
 from pymunk import Vec2d
+from .. import tool
 from .. import constants as c
 
 COLLISION_BIRD = 1
 COLLISION_PIG = 2
 COLLISION_BLOCK = 3
 COLLISION_LINE = 4
+COLLISION_EXPLODE = 5
 
-MAX_IMPULSE = 100000
+BIRD_IMPULSE_TIMES = 3
 MIN_DAMAGE_IMPULSE = 300
 
 def to_pygame(p):
@@ -36,8 +37,10 @@ class Physics():
         self.birds = []
         self.pigs = []
         self.blocks = []
+        self.explodes = []
         self.path_timer = 0
         self.check_collide = False
+        self.explode_timer = 0
         self.setup_lines()
         self.setup_collision_handler()
 
@@ -62,22 +65,34 @@ class Physics():
         def post_solve_pig_bird(arbiter, space, data):
             if self.check_collide:
                 pig_shape = arbiter.shapes[0]
-                my_phy.handle_pig_collide(pig_shape, MAX_IMPULSE)
+                my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length * BIRD_IMPULSE_TIMES)
         def post_solve_pig_line(arbiter, space, data):
             if self.check_collide:
                 pig_shape = arbiter.shapes[0]
                 my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length, True)
         def post_solve_pig_block(arbiter, space, data):
             if self.check_collide:
-                if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
+                if arbiter.total_impulse.length >= MIN_DAMAGE_IMPULSE:
                     pig_shape = arbiter.shapes[0]
                     my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length)
         def post_solve_block_bird(arbiter, space, data):
             if self.check_collide:
                 block_shape, bird_shape = arbiter.shapes
                 my_phy.handle_bird_collide(bird_shape)
-                if arbiter.total_impulse.length > 1100:
+                if arbiter.total_impulse.length >= MIN_DAMAGE_IMPULSE:
                     my_phy.handle_block_collide(block_shape, arbiter.total_impulse.length)
+
+        def post_solve_block_explode(arbiter, space, data):
+            if self.check_collide:
+                block_shape = arbiter.shapes[0]
+                if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
+                    my_phy.handle_block_collide(block_shape, arbiter.total_impulse.length)
+
+        def post_solve_pig_explode(arbiter, space, data):
+            if self.check_collide:
+                pig_shape = arbiter.shapes[0]
+                if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
+                    my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length)
 
         self.space.add_collision_handler(
             COLLISION_BIRD, COLLISION_LINE).post_solve = post_solve_bird_line
@@ -94,11 +109,18 @@ class Physics():
         self.space.add_collision_handler(
             COLLISION_BLOCK, COLLISION_BIRD).post_solve = post_solve_block_bird
 
+        self.space.add_collision_handler(
+            COLLISION_BLOCK, COLLISION_EXPLODE).post_solve = post_solve_block_explode
+
+        self.space.add_collision_handler(
+            COLLISION_PIG, COLLISION_EXPLODE).post_solve = post_solve_pig_explode
+
     def enable_check_collide(self):
         self.check_collide = True
 
     def add_bird(self, bird, distance, angle, x, y):
         x, y = to_pymunk(x, y)
+        radius = bird.get_radius()
         phybird = PhyBird(distance, angle, x, y, self.space)
         bird.set_physics(phybird)
         self.birds.append(bird)
@@ -131,6 +153,42 @@ class Physics():
             self.blocks.append(block)
         else:
             print('not support block type:', block.name)
+
+    def add_explode(self, pos, angle, length, mass):
+        phyexplode = PhyExplode(pos, angle, length, self.space, mass)
+        self.explodes.append(phyexplode)
+
+    def create_explosion(self, pos, radius, length, mass):
+        ''' parameter pos is the pymunk position'''
+        explode_num = 12
+        sub_pi = math.pi * 2 / explode_num
+        for i in range(explode_num):
+            angle = sub_pi * i
+            x = pos[0] + radius * math.sin(angle)
+            y = pos[1] + radius * math.cos(angle)
+            # angle value must calculated by math.pi * 2
+            self.add_explode((x,y), angle, length, mass)
+
+    def check_explosion(self):
+        explodes_to_remove = []
+        if len(self.explodes) == 0:
+            return
+
+        if self.explode_timer == 0:
+            self.explode_timer = self.current_time
+        elif (self.current_time - self.explode_timer) > 1000:
+            for explode in self.explodes:
+                self.space.remove(explode.shape, explode.shape.body)
+                self.explodes.remove(explode)
+                self.explode_timer = 0
+
+        for explode in self.explodes:
+            if explode.is_out_of_length():
+                explodes_to_remove.append(explode)
+
+        for explode in explodes_to_remove:
+            self.space.remove(explode.shape, explode.shape.body)
+            self.explodes.remove(explode)
 
     def update(self, game_info, level, mouse_pressed):
         birds_to_remove = []
@@ -201,6 +259,8 @@ class Physics():
             self.blocks.remove(block)
             level.update_score(c.SHAPE_SCORE)
 
+        self.check_explosion()
+
     def update_bird_path(self, bird, pos, level):
         if bird.path_timer == 0:
             bird.path_timer = self.current_time
@@ -253,11 +313,15 @@ class Physics():
         for block in self.blocks:
             block.draw(surface)
 
+        if c.DEBUG:
+            for explode in self.explodes:
+                pos = to_pygame(explode.body.position)
+                pg.draw.circle(surface, c.RED, pos, 5)
+
 class PhyBird():
-    def __init__(self, distance, angle, x, y, space):
+    def __init__(self, distance, angle, x, y, space, radius=12):
         self.life = 10
         mass = 5
-        radius = 12
         inertia = pm.moment_for_circle(mass, 0, radius, (0, 0))
         body = pm.Body(mass, inertia)
         body.position = x, y
@@ -327,6 +391,36 @@ class PhyCircle():
         space.add(body, shape)
         self.body = body
         self.shape = shape
+
+class PhyExplode():
+    def __init__(self, pos, angle, length, space, mass=5.0):
+        ''' parater angle is clockwise value '''
+        radius = 3
+        moment = 1000
+        body = pm.Body(mass, moment)
+        body.position = Vec2d(pos)
+
+        power = mass * 2000
+        impulse = power * Vec2d(0, 1)
+        # the angle of rotated function is counter-clockwise, need to reverse it
+        angle = -angle
+        body.apply_impulse_at_local_point(impulse.rotated(angle))
+
+        shape = pm.Circle(body, radius, (0, 0))
+        shape.friction = 1
+        shape.collision_type = COLLISION_EXPLODE
+        space.add(body, shape)
+        self.body = body
+        self.shape = shape
+        self.orig_pos = pos
+        self.length = length
+
+    def is_out_of_length(self):
+        pos = self.body.position
+        distance = tool.distance(*pos, *self.orig_pos)
+        if distance >= self.length:
+            return True
+        return False
 
 # must init as a global parameter to use in the post_solve handler
 my_phy = Physics()
