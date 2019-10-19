@@ -1,6 +1,6 @@
 # PythonAngryBirds
 a simple implementation of angrybirds using pygame and pymunk
-* support three birds：red bird, blue bird and yellow bird 
+* support three birds：red bird, blue bird, yellow bird, black bird and white bird
 * suport three blocks: glass, wood and stone
 * use json file to store level data (e.g. position of block and pig)
 * TODO: support different pigs
