@@ -15,6 +15,8 @@ def create_bird(type, x, y):
         bird = YellowBird(x, y)
     elif type == c.BLACK_BIRD:
         bird = BlackBird(x, y)
+    elif type == c.WHITE_BIRD:
+        bird = WhiteBird(x, y)
     return bird
 
 class Bird():
@@ -112,6 +114,13 @@ class Bird():
         image = self.frames[self.frame_index]
         self.image = pg.transform.rotate(image, self.angle_degree)
 
+    def change_image(self, frames):
+        self.frames = frames
+        self.frame_num = len(self.frames)
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.animate_timer = self.current_time
+
     def set_attack(self):
         self.state = c.ATTACK
 
@@ -120,6 +129,9 @@ class Bird():
 
     def set_collide(self):
         self.collide = True
+
+    def set_explode(self):
+        self.state = c.EXPLODE
 
     def set_dead(self):
         self.state = c.DEAD
@@ -157,7 +169,7 @@ class BlueBird(Bird):
         self.frames = self.load_frames(sheet, frame_rect_list, 0.7)
 
     def attacking(self, level, mouse_pressed):
-        if not self.clicked and mouse_pressed:
+        if not self.clicked and mouse_pressed and not self.collide:
             self.clicked = True
             # create two blue birds when first mouse click
             bird_list = [1, -1]
@@ -185,7 +197,7 @@ class YellowBird(Bird):
         self.frames = self.load_frames(sheet, frame_rect_list, c.BIRD_MULTIPLIER)
 
     def attacking(self, level, mouse_pressed):
-        if not self.clicked and mouse_pressed:
+        if not self.clicked and mouse_pressed and not self.collide:
             self.clicked = True
             # speed velocity of bird when first mouse click
             self.phy.body.velocity = self.phy.body.velocity * 3
@@ -213,7 +225,7 @@ class BlackBird(Bird):
         self.explode_frames = self.load_frames(sheet, explode_rect_list, c.BIRD_MULTIPLIER, c.BLACK)
 
     def attacking(self, level, mouse_pressed):
-        if not self.clicked and mouse_pressed:
+        if not self.clicked and mouse_pressed and not self.collide:
             self.clicked = True
             self.state = c.EXPLODE
             self.phy.body.velocity = self.phy.body.velocity * 0.01
@@ -234,9 +246,41 @@ class BlackBird(Bird):
             level.physics.create_explosion(self.phy.body.position, self.get_radius(), 60, 5)
             self.exploded = True
 
-    def change_image(self, frames):
-        self.frames = frames
-        self.frame_num = len(self.frames)
-        self.frame_index = 0
-        self.image = self.frames[self.frame_index]
-        self.animate_timer = self.current_time
+class WhiteBird(Bird):
+    def __init__(self, x, y):
+        Bird.__init__(self, x, y, c.WHITE_BIRD)
+        self.clicked = False
+
+    def load_images(self):
+        sheet = tool.GFX[c.BIRD_SHEET]
+        frame_rect_list = [(141, 443, 85, 85), (228, 441, 85, 85), (313, 438, 85, 85),
+                           (400, 439, 85, 85), (564, 439, 85, 85)]
+        self.frames = self.load_frames(sheet, frame_rect_list, c.BIRD_MULTIPLIER)
+
+    def attacking(self, level, mouse_pressed):
+        if not self.clicked and mouse_pressed and not self.collide:
+            self.clicked = True
+            vel_x, vel_y = self.phy.body.velocity
+            self.phy.body.velocity = (vel_x * 2, vel_y + 1000)
+            egg = Egg(self.rect.centerx, self.rect.bottom + 30)
+            level.physics.add_egg(egg)
+
+class Egg(Bird):
+    def __init__(self, x, y):
+        Bird.__init__(self, x, y, c.EGG)
+        self.exploded = False
+
+    def load_images(self):
+        sheet = tool.GFX[c.PIG_SHEET]
+        frame_rect_list = [(61, 1035, 44, 59)]
+        self.frames = self.load_frames(sheet, frame_rect_list, c.BIRD_MULTIPLIER, c.BLACK)
+
+        sheet = tool.GFX[c.PIG_SHEET]
+        explode_rect_list = [(408, 199, 112, 112), (275, 200, 130, 130), (133, 201, 139, 139)]
+        self.explode_frames = self.load_frames(sheet, explode_rect_list, c.BIRD_MULTIPLIER, c.BLACK)
+
+    def exploding(self, level):
+        if not self.exploded:
+            self.change_image(self.explode_frames)
+            level.physics.create_explosion(self.phy.body.position, self.get_radius(), 50, 5)
+            self.exploded = True

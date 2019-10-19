@@ -12,6 +12,7 @@ COLLISION_PIG = 2
 COLLISION_BLOCK = 3
 COLLISION_LINE = 4
 COLLISION_EXPLODE = 5
+COLLISION_EGG = 6
 
 BIRD_IMPULSE_TIMES = 3
 MIN_DAMAGE_IMPULSE = 300
@@ -38,6 +39,7 @@ class Physics():
         self.pigs = []
         self.blocks = []
         self.explodes = []
+        self.eggs = []
         self.path_timer = 0
         self.check_collide = False
         self.explode_timer = 0
@@ -94,6 +96,11 @@ class Physics():
                 if arbiter.total_impulse.length > MIN_DAMAGE_IMPULSE:
                     my_phy.handle_pig_collide(pig_shape, arbiter.total_impulse.length)
 
+        def post_solve_egg(arbiter, space, data):
+            if self.check_collide:
+                egg_shape = arbiter.shapes[0]
+                my_phy.handle_egg_collide(egg_shape)
+
         self.space.add_collision_handler(
             COLLISION_BIRD, COLLISION_LINE).post_solve = post_solve_bird_line
 
@@ -115,6 +122,13 @@ class Physics():
         self.space.add_collision_handler(
             COLLISION_PIG, COLLISION_EXPLODE).post_solve = post_solve_pig_explode
 
+        self.space.add_collision_handler(
+            COLLISION_EGG, COLLISION_LINE).post_solve = post_solve_egg
+        self.space.add_collision_handler(
+            COLLISION_EGG, COLLISION_BLOCK).post_solve = post_solve_egg
+        self.space.add_collision_handler(
+            COLLISION_EGG, COLLISION_PIG).post_solve = post_solve_egg
+
     def enable_check_collide(self):
         self.check_collide = True
 
@@ -124,6 +138,12 @@ class Physics():
         phybird = PhyBird(distance, angle, x, y, self.space)
         bird.set_physics(phybird)
         self.birds.append(bird)
+
+    def add_egg(self, egg):
+        x, y = to_pymunk(egg.rect.centerx, egg.rect.centery)
+        phy = PhyEgg((x, y), egg.rect.w, egg.rect.h, self.space, 10)
+        egg.set_physics(phy)
+        self.eggs.append(egg)
 
     def add_bird_by_copy(self, bird, body):
         phybird = PhyBird2(body, self.space)
@@ -194,6 +214,7 @@ class Physics():
         birds_to_remove = []
         pigs_to_remove = []
         blocks_to_remove = []
+        eggs_to_remove = []
         self.current_time = game_info[c.CURRENT_TIME]
 
         #From pymunk doc:Performing multiple calls with a smaller dt
@@ -204,7 +225,8 @@ class Physics():
 
         for bird in self.birds:
             bird.update(game_info, level, mouse_pressed)
-            if bird.phy.shape.body.position.y < 0 or bird.state == c.DEAD:
+            if (bird.phy.shape.body.position.y < 0 or bird.state == c.DEAD
+                or bird.phy.shape.body.position.x > c.SCREEN_WIDTH):
                 birds_to_remove.append(bird)
             else:
                 poly = bird.phy.shape
@@ -259,6 +281,24 @@ class Physics():
             self.blocks.remove(block)
             level.update_score(c.SHAPE_SCORE)
 
+        for egg in self.eggs:
+            egg.update(game_info, level, mouse_pressed)
+            if egg.state == c.DEAD:
+                eggs_to_remove.append(egg)
+            poly = egg.phy.shape
+            p = to_pygame(poly.body.position)
+            x, y = p
+            w, h = egg.image.get_size()
+            # change to [left, top] position of pygame
+            x -= w * 0.5
+            y -= h * 0.5
+            angle_degree = math.degrees(poly.body.angle)
+            egg.update_position(x, y, angle_degree)
+
+        for egg in eggs_to_remove:
+            self.space.remove(egg.phy.shape, egg.phy.shape.body)
+            self.eggs.remove(egg)
+
         self.check_explosion()
 
     def update_bird_path(self, bird, pos, level):
@@ -293,6 +333,13 @@ class Physics():
                 block.set_damage(damage)
                 print('block damage:', damage, ' impulse:', impulse, ' life:', block.life)
 
+    def handle_egg_collide(self, egg_shape):
+        for egg in self.eggs:
+            if egg_shape == egg.phy.shape:
+                egg.set_explode()
+                egg.phy.body.velocity = egg.phy.body.velocity * 0.01
+                break
+
     def draw(self, surface):
         # Draw static lines
         if c.DEBUG:
@@ -312,6 +359,9 @@ class Physics():
 
         for block in self.blocks:
             block.draw(surface)
+
+        for egg in self.eggs:
+            egg.draw(surface)
 
         if c.DEBUG:
             for explode in self.explodes:
@@ -421,6 +471,23 @@ class PhyExplode():
         if distance >= self.length:
             return True
         return False
+
+class PhyEgg():
+    def __init__(self, pos, length, height, space, mass=5.0):
+        moment = 1000
+        body = pm.Body(mass, moment)
+        body.position = Vec2d(pos)
+
+        power = 5000
+        impulse = power * Vec2d(0, -1)
+        body.apply_impulse_at_local_point(impulse)
+
+        shape = pm.Poly.create_box(body, (length, height))
+        shape.friction = 1
+        shape.collision_type = COLLISION_EGG
+        space.add(body, shape)
+        self.body = body
+        self.shape = shape
 
 # must init as a global parameter to use in the post_solve handler
 my_phy = Physics()
