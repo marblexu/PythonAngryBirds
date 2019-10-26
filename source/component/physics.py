@@ -135,7 +135,7 @@ class Physics():
     def add_bird(self, bird, distance, angle, x, y):
         x, y = to_pymunk(x, y)
         radius = bird.get_radius()
-        phybird = PhyBird(distance, angle, x, y, self.space)
+        phybird = PhyBird(distance, angle, x, y, self.space, bird.get_radius(), bird.mass)
         bird.set_physics(phybird)
         self.birds.append(bird)
 
@@ -226,7 +226,7 @@ class Physics():
         for bird in self.birds:
             bird.update(game_info, level, mouse_pressed)
             if (bird.phy.shape.body.position.y < 0 or bird.state == c.DEAD
-                or bird.phy.shape.body.position.x > c.SCREEN_WIDTH):
+                or bird.phy.shape.body.position.x > c.SCREEN_WIDTH * 2):
                 birds_to_remove.append(bird)
             else:
                 poly = bird.phy.shape
@@ -313,7 +313,10 @@ class Physics():
         for bird in self.birds:
             if bird_shape == bird.phy.shape:
                 if is_ground: # change the velocity of bird to 50% of the original value
-                    bird.phy.body.velocity = bird.phy.body.velocity * 0.5
+                    if not (bird.name == c.BIG_RED_BIRD and bird.jump):
+                        bird.phy.body.velocity = bird.phy.body.velocity * 0.5
+                elif bird.name == c.BIG_RED_BIRD:
+                    bird.jump = False
                 bird.set_collide()
 
     def handle_pig_collide(self, pig_shape, impulse, is_ground=False):
@@ -369,9 +372,8 @@ class Physics():
                 pg.draw.circle(surface, c.RED, pos, 5)
 
 class PhyBird():
-    def __init__(self, distance, angle, x, y, space, radius=12):
+    def __init__(self, distance, angle, x, y, space, radius, mass):
         self.life = 10
-        mass = 5
         inertia = pm.moment_for_circle(mass, 0, radius, (0, 0))
         body = pm.Body(mass, inertia)
         body.position = x, y

@@ -77,6 +77,7 @@ YELLOW_BIRD = 'yellow_bird'
 BLACK_BIRD = 'black_bird'
 WHITE_BIRD = 'white_bird'
 EGG = 'egg'
+BIG_RED_BIRD = 'big_red_bird'
 
 #PIG
 PIG_SHEET = 'full-sprite'

@@ -17,6 +17,8 @@ def create_bird(type, x, y):
         bird = BlackBird(x, y)
     elif type == c.WHITE_BIRD:
         bird = WhiteBird(x, y)
+    elif type == c.BIG_RED_BIRD:
+        bird = BigRedBird(x, y)
     return bird
 
 class Bird():
@@ -39,6 +41,7 @@ class Bird():
         self.pos_timer = 0
         self.path_timer = 0
         self.collide = False # collided with ground or shape if it is True
+        self.mass = 5.0
 
     def load_frames(self, sheet, frame_rect_list, scale, color=c.WHITE):
         frames = []
@@ -284,3 +287,15 @@ class Egg(Bird):
             self.change_image(self.explode_frames)
             level.physics.create_explosion(self.phy.body.position, self.get_radius(), 50, 5)
             self.exploded = True
+
+class BigRedBird(Bird):
+    def __init__(self, x, y):
+        Bird.__init__(self, x, y, c.BIG_RED_BIRD)
+        self.mass = 8.0
+        self.jump = True
+
+    def load_images(self):
+        sheet = tool.GFX[c.BIRD_SHEET]
+        frame_rect_list = [(120, 638, 120, 120), (247, 638, 120, 120), (376, 639, 120, 120),
+                           (501, 638, 120, 120)]
+        self.frames = self.load_frames(sheet, frame_rect_list, c.BIRD_MULTIPLIER)
